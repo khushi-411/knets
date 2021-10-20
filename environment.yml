@@ -1,0 +1,7 @@
+name: library-environment
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - torch
+  - torchvision

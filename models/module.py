@@ -20,14 +20,14 @@ class Module(object):
     def backward(self, loss):
         assert isinstance(loss, losses._Loss)
         # find net order
-        layers = []
+        _layers = []
         for name, v in self.__dict__.items():
             if not isinstance(v, layers._BaseLayer):
                 continue
             layer = v
             layer.name = name
-            layers.append((layer.order, layer))
-        self._ordered_layers = [l[1] for l in sorted(layers, key=lambda x: x[0])]
+            _layers.append((layer.order, layer))
+        self._ordered_layers = [l[1] for l in sorted(_layers, key=lambda x: x[0])]
 
         # back propagate through this order
         last_layer = self._ordered_layers[-1]

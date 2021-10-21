@@ -2,6 +2,8 @@ name: library-environment
 channels:
   - conda-forge
 dependencies:
+  - matplotlib
+  - pandas
   - python
   - torch
   - torchvision

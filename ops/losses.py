@@ -8,7 +8,7 @@ class _Loss:
     The base class to calculate loss.
     """
     def __init__(self, loss, delta) -> None:
-        super(Loss, self).__init__()
+        super(_Loss, self).__init__()
         self.data = loss
         self.delta = delta
 
@@ -139,7 +139,7 @@ class SigmoidCrossEntropy(CrossEntropy):
         super().__init__()
 
     def apply(self, prediction, target):
-        t = target if target.dtype is torch.float32 else target.astype(torch.float32)
+        t = target if target.dtype is torch.float32 else target.to(torch.float32)
         self._store_pred_target(prediction, t)
         p = self._pred
         loss = -torch.mean(

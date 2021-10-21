@@ -12,7 +12,7 @@ class Activation:
     def forward(self, input: Tensor) -> Tensor:
         raise NotImplementedError
 
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         raise NotImplementedError
 
     def __call__(self, *inputs: Tensor) -> Tensor:
@@ -25,7 +25,7 @@ class Linear(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return input
     
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         return torch.ones_like(input)
 
 class ReLU(Activation):
@@ -35,7 +35,7 @@ class ReLU(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return torch.max(0, input)
 
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         return torch.where(input > 0, torch.ones_like(input), torch.ones_like(input))
 
 class LeakyReLU(Activation):
@@ -49,7 +49,7 @@ class LeakyReLU(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return torch.max(input, self.alpha * input)
 
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         return torch.where(input > 0., torch.ones_like(input), torch.full_like(input, self.alpha))
 
 def ELU(Activation):
@@ -63,7 +63,7 @@ def ELU(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return torch.max(input, self.alpha*(torch.exp(input)-1))
 
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         return torch.where(input > 0., torch.ones_like(input), self.forward(input) + self.alpha)
 
 class Tanh(Activation):
@@ -73,8 +73,8 @@ class Tanh(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return torch.tanh(input)
 
-    def backward(self, input: Tensor) -> Tensor:
-        return 1. - torch.square(torch.tanh(x))
+    def derivative(self, input: Tensor) -> Tensor:
+        return 1. - torch.square(torch.tanh(input))
 
 class Sigmoid(Activation):
     """
@@ -83,7 +83,7 @@ class Sigmoid(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return 1./(1. + torch.exp(-input))
 
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         f = self.forward(input)
         return f*(1.-f)
 
@@ -94,7 +94,7 @@ class SoftPlus(Activation):
     def forward(self, input: Tensor) -> Tensor:
         return torch.log(1. + torch.exp(input))
 
-    def backward(self, input: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         return 1./(1.+torch.exp(-input))
 
 class SoftMax(Activation):
@@ -106,7 +106,7 @@ class SoftMax(Activation):
         exp = torch.exp(shift_x + 1e-6)
         return exp/torch.sum(exp, axis=axis, keepdims=True)
 
-    def backward(self, x: Tensor) -> Tensor:
+    def derivative(self, input: Tensor) -> Tensor:
         return torch.ones_like(input)
 
 m = 4111999

@@ -23,7 +23,8 @@ class _BaseLayer:
 
     def _process_input(self, x):
         if isinstance(x, Tensor):
-            x = x.astype(torch.float32)
+            # https://discuss.pytorch.org/t/how-to-cast-a-tensor-to-another-type/2713
+            x = x.to(torch.float32)
             x = var.Variable(x)
             x.info["new_layer_order"] = 0
 
@@ -116,7 +117,8 @@ class Dense(ParamLayer):
 
     def forward(self, x):
         self._x = self._process_input(x)
-        self._wx_b = self._x.dot(self.w)
+        # https://stackoverflow.com/questions/66720543/pytorch-1d-tensors-expected-but-got-2d-tensors
+        self._wx_b = self._x.matmul(self.w)
         if self.use_bias:
             self._wx_b += self.b
 
@@ -128,9 +130,9 @@ class Dense(ParamLayer):
         # dw, db
         dz = self.data_vars["out"].error
         dz *= self._a.derivative(self._wx_b)
-        grads = {"w": self._x.T.dot(dz)}
+        grads = {"w": self._x.T.matmul(dz)}
         if self.use_bias:
             grads["b"] = torch.sum(dz, axis=0, keepdims=True)
         # dx
-        self.data_vars["in"].set_error(dz.dot(self.w.T))     # pass error to the layer before
+        self.data_vars["in"].set_error(dz.matmul(self.w.T))     # pass error to the layer before
         return grads

@@ -4,12 +4,12 @@ from torch import nn
 def _check_transfer(predictions, labels):
     assert predictions.ndim == 1
     assert labels.ndim == 1
-    return predictions.astype(torch.int32), labels.astype(torch.int32)
+    return predictions.to(torch.int32), labels.to(torch.int32)
 
 def accuracy(predictions, labels):
     # https://stackoverflow.com/questions/5142418/what-is-the-use-of-assert-in-python
     assert predictions.shape == labels.shape
-    p, l = predictions.astype(torch.int32), labels.astype(torch.int32)
+    p, l = predictions.to(torch.int32), labels.to(torch.int32)
     return torch.where(p == l, 1., 0.).mean()
 
 def roc(logits, labels, num_thresholds):

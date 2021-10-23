@@ -1,0 +1,11 @@
+name: library-environment
+channels:
+  - conda-forge
+dependencies:
+  - matplotlib
+  - seaborn
+  - csv
+  - pandas
+  - python
+  - torch
+  - torchvision

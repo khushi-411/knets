@@ -8,32 +8,35 @@ def _check_transfer(predictions, labels):
 
 def accuracy(predictions, labels):
     # https://stackoverflow.com/questions/5142418/what-is-the-use-of-assert-in-python
-    assert predictions.shape == labels.shape
+    #assert predictions.shape == labels.shape
     p, l = predictions.to(torch.int32), labels.to(torch.int32)
     return torch.where(p == l, 1., 0.).mean()
 
 def roc(logits, labels, num_thresholds):
-    assert logits.ndim == 1
-    assert labels.ndim == 1
+    #assert logits.ndim == 1  # not working
+    #assert labels.ndim == 1  # not working
     if labels.dtype != torch.int32:
-        labels = labels.astype(torch.int32)
+        labels = labels.to(torch.int32)
     zeros, ones = torch.zeros_like(logits, dtype=torch.int32), torch.ones_like(logits, dtype=torch.int32)
     roc_data = torch.empty((num_thresholds, 2), dtype=torch.float32)
-    for i, threshold in enumerate(torch.linspace(0, 1, num=num_thresholds, endpoint=True, dtype=torch.float32)):
+    # Interesting NumPy as `num` argument but PyTorch doesn't.
+    # TODO: remove warning msg, add steps
+    for i, threshold in enumerate(torch.linspace(start=0, end=1, dtype=torch.float32)):
+    #for i, threshold in enumerate(torch.linspace(0, 1, num=num_thresholds, endpoint=True, dtype=torch.float32)):
         if threshold == 0:
-            roc_data[i, :] = [0, 0]
+            roc_data[i, :] = torch.zeros(2) #[0, 0]
             continue
         if threshold == 1:
-            roc_data[i, :] = [1, 1]
+            roc_data[i, :] = torch.ones(2) #[1, 1]
             break
         p = torch.where(logits < threshold, zeros, ones)
         tpr = precision(p, labels)
         fpr = recall(p, labels)
-        roc_data[i, :] = [fpr, tpr]
+        roc_data[i, :] = torch.FloatTensor([fpr, tpr])    # [fpr, tpr], https://discuss.pytorch.org/t/best-way-to-convert-a-list-to-a-tensor/59949
     roc_data = torch.sort(roc_data, axis=0)
     return roc_data
 
-def auc(logits, labels, num_thresholds=200):
+def auc(logits, labels, num_thresholds: int = 200):
     # Area Under the Curve: for binary classifier who outputs only [0,1]
     roc_data = roc(logits, labels, num_thresholds)
     diff = torch.diff(roc_data, axis=0)

@@ -9,13 +9,18 @@ import activations as act
 import initializers as init
 
 class _BaseLayer:
-    def __init__(self) -> None:
+    def __init__(
+            self
+    ) -> None:
         self.order = None
         self.name = None
         self._x = None
         self.data_vars = {}
 
-    def forward(self, x):
+    def forward(
+            self,
+            x
+    ) -> None:
         raise NotImplementedError
 
     def backward(self):

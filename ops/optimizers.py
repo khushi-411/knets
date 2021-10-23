@@ -23,6 +23,7 @@ class Optimizer:
 class SGD(Optimizer):
     def __init__(self, params: nn.Module, learning_rate: float) -> None:
         super().__init__(params=params, learning_rate=learning_rate)
+        self.learning_rate = learning_rate
 
     def step(self) -> None:
         for var, grad in zip(self.vars, self.grads):

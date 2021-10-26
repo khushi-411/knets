@@ -58,7 +58,7 @@ class Net(nn.Module):
             self,
             x: Tensor
     ) -> variable.Variable:
-        
+ 
         """Multi-layer perceptron, here: 2."""
         x = self.layer_1(x)
         x = self.layer_2(x)
@@ -144,7 +144,7 @@ for step in range(500):
         f1 = metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
         f1_dict = {"Step": step, "Value": f1.tolist()}
         df_f1_score = df_f1_score.append(f1_dict, ignore_index=True)
-        
+ 
         print("Step: %i | loss: %.5f | acc: %.5f | precision: %.5f | recall: %.5f | specificity: %.5f | f1_score: %.5f" % (step, loss.data, acc, precision_val, recall_val, spe, f1))
 
 df_loss.to_csv("loss.csv", index=False, header=True)

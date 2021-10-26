@@ -5,8 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import torch
-import torchvision
-import torchvision.transforms as transforms
+from torch import Tensor
 
 sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/datasets')
 import mnist
@@ -23,7 +22,9 @@ sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/eval')
 import metrics
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(
+            self
+    ) -> None:
         super(Net, self).__init__()
         weights = init.RandomUniform()
         bias = init.Constant(0.1)
@@ -37,7 +38,10 @@ class Net(nn.Module):
         #self.layer_1 = layers.Dense(28*28, 128, act.tanh, weights, bias)
         #self.out = layers.Dense(128, 10, act.sigmoid)
 
-    def forward(self, x):
+    def forward(
+            self,
+            x: Tensor
+    ) -> variable.Variable:
 
         """Multi-layer perceptron, here: 2."""
         x = self.layer_1(x)

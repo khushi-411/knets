@@ -1,10 +1,11 @@
 import sys
+from typing import Dict
 
 import torch
 from torch import Tensor
 
 sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
-import variable as var
+import variable
 import activations as act
 import initializers as init
 
@@ -19,18 +20,23 @@ class _BaseLayer:
 
     def forward(
             self,
-            x
-    ) -> None:
+            x: Tensor
+    ):
         raise NotImplementedError
 
-    def backward(self):
+    def backward(
+            self
+    ):
         raise NotImplementedError
 
-    def _process_input(self, x):
+    def _process_input(
+            self,
+            x: Tensor
+    ) -> Tensor:
         if isinstance(x, Tensor):
             # https://discuss.pytorch.org/t/how-to-cast-a-tensor-to-another-type/2713
             x = x.to(torch.float32)
-            x = var.Variable(x)
+            x = variable.Variable(x)
             x.info["new_layer_order"] = 0
 
         self.data_vars["in"] = x
@@ -39,13 +45,19 @@ class _BaseLayer:
         _x = x.data
         return _x
 
-    def _wrap_out(self, out):
-        out = var.Variable(out)
+    def _wrap_out(
+            self,
+            out: Tensor
+    ) -> variable.Variable:
+        out = variable.Variable(out)
         out.info["new_layer_order"] = self.order + 1
         self.data_vars["out"] = out     # add to layer's data_vars
         return out
 
-    def __call__(self, x):
+    def __call__(
+            self,
+            x: Tensor
+    ) -> variable.Variable:
         return self.forward(x)
 
 class ParamLayer(_BaseLayer):
@@ -102,12 +114,12 @@ class ParamLayer(_BaseLayer):
 class Dense(ParamLayer):
     def __init__(
             self,
-            n_in,
-            n_out,
-            activation=None,
-            w_initializer=None,
-            b_initializer=None,
-            use_bias=True,
+            n_in: int,
+            n_out: int,
+            activation=None,  # activations.Tanh
+            w_initializer=None, # initializers.RandomUniform
+            b_initializer=None,  # initializers.Constant
+            use_bias: bool = True,
     ) -> None:
         super().__init__(
             w_shape=(n_in, n_out),
@@ -120,7 +132,10 @@ class Dense(ParamLayer):
         self._n_in = n_in
         self._n_out = n_out
 
-    def forward(self, x):
+    def forward(
+            self,
+            x: Tensor
+    ) -> variable.Variable:
         self._x = self._process_input(x)
         # https://stackoverflow.com/questions/66720543/pytorch-1d-tensors-expected-but-got-2d-tensors
         self._wx_b = self._x.matmul(self.w)
@@ -131,7 +146,9 @@ class Dense(ParamLayer):
         wrapped_out = self._wrap_out(self._activated)
         return wrapped_out
 
-    def backward(self):
+    def backward(
+            self
+    ) -> Dict[Tensor, Tensor]:
         # dw, db
         dz = self.data_vars["out"].error
         dz *= self._a.derivative(self._wx_b)

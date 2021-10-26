@@ -10,14 +10,22 @@ import losses
 import layers
 
 class Module(object):
-    def __init__(self) -> None:
+    def __init__(
+            self
+    ) -> None:
         self._ordered_layers = []
         self.params = {}
 
-    def forward(self, *inputs: List[Tensor]) -> Optional[Tensor]:
+    def forward(
+            self,
+            *inputs: List[Tensor]
+    ) -> Optional[Tensor]:
         raise NotImplementedError
 
-    def backward(self, loss):
+    def backward(
+            self,
+            loss: losses._Loss
+    ) -> None:
         assert isinstance(loss, losses._Loss)
         # find net order
         _layers = []
@@ -38,16 +46,26 @@ class Module(object):
                 for k in layer.param_vars.keys():
                     self.params[layer.name]["grads"][k][:] = grads[k]
 
-    def sequential(self, *layers):
+    def sequential(
+            self,
+            *layers
+    ):
         assert isinstance(layers, (list, tuple))
         for i, l in enumerate(layers):
             self.__setattr__("layer_%i" % i, l)
         return SeqLayers(layers)
 
-    def __call__(self, *args):
+    def __call__(
+            self,
+            *args
+    ):
         return self.forward(*args)
 
-    def __setattr__(self, key, value):
+    def __setattr__(
+            self,
+            key,
+            value
+    ):
         if isinstance(value, layers.ParamLayer):
             layer = value
             self.params[key] = {
@@ -58,16 +76,25 @@ class Module(object):
 
 
 class SeqLayers:
-    def __init__(self, layers):
+    def __init__(
+            self,
+            layers
+    ):
         assert isinstance(layers, (list, tuple))
         for l in layers:
             assert isinstance(l, layers.BaseLayer)
         self.layers = layers
 
-    def forward(self, x):
+    def forward(
+            self,
+            x
+    ):
         for l in self.layers:
             x = l.forward(x)
         return x
 
-    def __call__(self, x):
+    def __call__(
+            self,
+            x
+    ):
         return self.forward(x)

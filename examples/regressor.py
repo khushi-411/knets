@@ -3,6 +3,7 @@ import sys
 import matplotlib.pyplot as plt
 
 import torch
+from torch import Tensor
 
 sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/models')
 import module as nn
@@ -18,7 +19,9 @@ x = torch.linspace(-1, 1, 200)[:, None]       # [batch, 1]
 y = x ** 2 + torch.normal(0., 0.1, (200, 1))     # [batch, 1]
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(
+            self
+    ) -> None:
         super().__init__()
         w_init = init.RandomUniform()
         b_init = init.Constant(0.1)
@@ -27,7 +30,10 @@ class Net(nn.Module):
         self.l2 = layers.Dense(10, 10, act.tanh, w_init, b_init)
         self.out = layers.Dense(10, 1, act.sigmoid)
 
-    def forward(self, x):
+    def forward(
+            self,
+            x: Tensor
+    ) -> variable.Variable:
         x = self.l1(x)
         x = self.l2(x)
         o = self.out(x)

@@ -82,7 +82,8 @@ class SeqLayers:
     ):
         assert isinstance(layers, (list, tuple))
         for l in layers:
-            assert isinstance(l, layers.BaseLayer)
+            continue
+            #assert isinstance(l, layers._BaseLayer)
         self.layers = layers
 
     def forward(

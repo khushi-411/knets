@@ -81,6 +81,7 @@ class ParamLayer(_BaseLayer):
         self.use_bias = use_bias
 
         if activation is None:
+            # TODO
             self._a = act.Linear()
         elif isinstance(activation, act.Activation):
             self._a = activation
@@ -184,6 +185,7 @@ class Conv2D(ParamLayer):
                 use_bias=use_bias)
         self.in_channels = in_channels
         self.out_channels = out_channels
+        # https://stackoverflow.com/questions/53986123
         self.padding = padding.lower()
         assert padding in ("valid", "same"), ValueError
 

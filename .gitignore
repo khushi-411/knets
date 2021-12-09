@@ -3,3 +3,9 @@ datasets/__pycache__/
 eval/__pycache__/
 models/__pycache__/
 ops/__pycache__/
+
+.github/
+datasets/data/archive/
+datasets/data/mnist_test.csv
+datasets/data/mnist_train.csv
+docs/

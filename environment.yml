@@ -1,4 +1,4 @@
-name: library-environment
+name: knets
 channels:
   - conda-forge
 dependencies:

@@ -9,7 +9,7 @@ To run the files:
 
 1. Clone the repository
    ```
-   git clone https://github.com/khushi-411/simple-neural-network
+   git clone https://github.com/khushi-411/knets.git
    ```
 2. To train the model, run:
    ```

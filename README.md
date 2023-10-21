@@ -5,25 +5,31 @@ I aim to build a simple Neural Network from scratch based on [PyTorch](https://p
 ### Usage
 You need to install a few libraries to execute these codes. The dependencies are mentioned in [requirements.txt](https://github.com/khushi-411/simple-neural-network/blob/main/requirements.txt) and [environment.yml](https://github.com/khushi-411/simple-neural-network/blob/main/environment.yml). Please take a look!
 
-To run the files:
+#### Install
+```python
+pip install knets
+```
+
+#### From source
+To download files:
 
 1. Clone the repository
-   ```
+   ```python
    git clone https://github.com/khushi-411/knets.git
+   cd knets
    ```
-2. To train the model, run:
+2. Create a virtual Conda environment:
+   ```python
+   conda env create -f environment.yml
    ```
-   python train_nn.py
+3. Install dependencies:
+   ```python
+   pip install -r requirements.txt
    ```
-3. To test the model, run:
+4. Build project:
+   ```python
+   python -m build --sdist --wheel .
    ```
-   python test_nn.py
-   ```
-
-### Environment configuration
-- CPU Model: Intel(R) Core(TM) i7-10870H CPU @ 2.20GHz
-- RAM GB: 16
-- Operating System: Manjaro Linux 21.1.1, Pahvo
 
 ### References
 - Wikipedia’s article on [Neural Network](https://en.wikipedia.org/wiki/Neural_network).

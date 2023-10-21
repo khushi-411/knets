@@ -1,11 +1,11 @@
-name: knets
+name: knets-dev
 channels:
   - conda-forge
 dependencies:
   - matplotlib
   - seaborn
-  - csv
   - pandas
   - python
-  - torch
-  - torchvision
+  - setuptools
+  - build
+  - toml

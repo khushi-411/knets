@@ -7,16 +7,6 @@ from torch import Tensor
 
 import knets
 
-# sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/models')
-#import module as nn
-#import layers
-
-# sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
-#import initializers as init, activations as act, losses, optimizers, variable
-
-# sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/eval')
-#import metrics
-
 # https://discuss.pytorch.org/t/generating-random-tensors-according-to-the-uniform-distribution-pytorch/53030
 x0 = torch.normal(-2, 1, (100, 2))
 x1 = torch.normal(2, 1, (100, 2))

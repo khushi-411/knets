@@ -7,19 +7,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch import Tensor
 
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/datasets')
-import mnist
-from dataloader import DataLoader
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/models')
-import module as nn
-import layers
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
-import initializers as init, activations as act, losses, optimizers, variable
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/eval')
-import metrics
+import knets
 
 class Net(nn.Module):
     def __init__(

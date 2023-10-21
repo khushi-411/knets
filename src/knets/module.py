@@ -4,9 +4,8 @@ from typing import List, Optional
 import torch
 from torch import Tensor
 
-# https://stackoverflow.com/questions/4383571/importing-files-from-different-folder
-import losses
-import layers
+import knets
+
 
 class Module(object):
     def __init__(
@@ -23,13 +22,13 @@ class Module(object):
 
     def backward(
             self,
-            loss: losses._Loss
+            loss: knets.losses._Loss
     ) -> None:
-        assert isinstance(loss, losses._Loss)
+        assert isinstance(loss, knets.losses._Loss)
         # find net order
         _layers = []
         for name, v in self.__dict__.items():
-            if not isinstance(v, layers._BaseLayer):
+            if not isinstance(v, knets.layers._BaseLayer):
                 continue
             layer = v
             layer.name = name
@@ -41,18 +40,18 @@ class Module(object):
         last_layer.data_vars["out"].set_error(loss.delta)
         for layer in self._ordered_layers[::-1]:
             grads = layer.backward()
-            if isinstance(layer, layers.ParamLayer):
+            if isinstance(layer, knets.layers.ParamLayer):
                 for k in layer.param_vars.keys():
                     self.params[layer.name]["grads"][k][:] = grads[k]
 
     def sequential(
             self,
-            *layers
+            *knets.layers
     ):
-        assert isinstance(layers, (list, tuple))
-        for i, l in enumerate(layers):
+        assert isinstance(knets.layers, (list, tuple))
+        for i, l in enumerate(knets.layers):
             self.__setattr__("layer_%i" % i, l)
-        return SeqLayers(layers)
+        return SeqLayers(knets.layers)
 
     def __call__(
             self,
@@ -65,7 +64,7 @@ class Module(object):
             key,
             value
     ):
-        if isinstance(value, layers.ParamLayer):
+        if isinstance(value, knets.layers.ParamLayer):
             layer = value
             self.params[key] = {
                 "vars": layer.param_vars,
@@ -79,9 +78,9 @@ class SeqLayers:
             self,
             layers
     ):
-        assert isinstance(layers, (list, tuple))
-        for l in layers:
-            assert isinstance(l, layers.BaseLayer)
+        assert isinstance(knets.layers, (list, tuple))
+        for l in knets.layers:
+            assert isinstance(l, knets.layers.BaseLayer)
         self.layers = layers
 
     def forward(

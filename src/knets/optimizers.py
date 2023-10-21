@@ -3,7 +3,7 @@ from typing import Tuple
 
 import torch
 
-import module as nn
+import knets.module as nn
 
 class Optimizer:
     def __init__(

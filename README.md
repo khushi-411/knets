@@ -1,4 +1,4 @@
-# Simple Neural Network
+# knets
 
 I aim to build a simple Neural Network from scratch based on [PyTorch](https://pytorch.org/docs/stable/index.html). The sole objective is to understand the fundamentals of deep learning and to understand the backend implementation of the code.
 
@@ -10,8 +10,7 @@ You need to install a few libraries to execute these codes. The dependencies are
 pip install knets
 ```
 
-#### From source
-To download files:
+#### Build from source
 
 1. Clone the repository
    ```python
@@ -29,6 +28,10 @@ To download files:
 4. Build project:
    ```python
    python -m build --sdist --wheel .
+   ```
+5. Install:
+   ```python
+   pip install .
    ```
 
 ### References

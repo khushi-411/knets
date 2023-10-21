@@ -16,9 +16,9 @@ class Net(nn.Module):
 
         super(Net, self).__init__()
         """Other ways for initialization: init.RandomNormal(), init.TruncatedNormal()"""
-        weights = init.RandomUniform()
+        weights = knets.init.RandomUniform()
         """Other ways bias can be initialize: init.Zeros(), init.Ones()"""
-        bias = init.Constant(0.1)
+        bias = knets.init.Constant(0.1)
         
         """Layers; 
         Parameters are:
@@ -34,9 +34,9 @@ class Net(nn.Module):
         # TODO: create two function to design layers; 1st function is used to create layers and the other is used to apply activation function.
         
         """Multi-layer perceptron, here: 2."""
-        self.layer_1 = layers.Dense(28*28, 512, act.tanh, weights, bias)
-        self.layer_2 = layers.Dense(512, 512, act.tanh, weights, bias)
-        self.out = layers.Dense(512, 10, act.sigmoid)
+        self.layer_1 = knets.layers.Dense(28*28, 512, act.tanh, weights, bias)
+        self.layer_2 = knets.layers.Dense(512, 512, act.tanh, weights, bias)
+        self.out = knets.layers.Dense(512, 10, act.sigmoid)
 
         """Single layer perceptron."""
         #self.layer_1 = layers.Dense(28*28, 128, act.tanh, weights, bias)
@@ -59,7 +59,7 @@ class Net(nn.Module):
         return x
 
 """Load dataset"""
-train = pd.read_csv('/home/khushi/Documents/simple-neural-network/datasets/data/mnist_train.csv').astype(np.float32)
+train = pd.read_csv('/home/khushi/Documents/knets/tests/datasets/data/mnist_train.csv').astype(np.float32)
 train_data = pd.DataFrame(train.iloc[:, 1:])
 train_target = pd.DataFrame(train.iloc[:, 0])
 
@@ -85,10 +85,10 @@ df_f1_score = pd.DataFrame(columns=["Step", "Value"])
 net = Net()
 
 """Other optimizers that can be used: optimizers.SGD(), optimizers.Momentum(), optimizers.AdaGrad(), optimizers.Adadelta(), optimizers.RMSProp(), optimizers.Adam(), optimizers.AdaMax()"""
-optimizer = optimizers.Adam(net.params, learning_rate=0.001)
+optimizer = knets.optimizers.Adam(net.params, learning_rate=0.001)
 
 """Other loss functions that can be used: losses.MSE(), losses.CrossEntropy(), losses.SoftMaxCrossEntropy(), losses.SoftMaxCrossEntropyWithLogits(), losses.SparseSoftMaxCrossEntropy(), losses.SparseSoftMaxCrossEntropyWithLogits()"""
-loss_func = losses.SigmoidCrossEntropy()
+loss_func = knets.losses.SigmoidCrossEntropy()
 
 """Training"""
 for step in range(500):

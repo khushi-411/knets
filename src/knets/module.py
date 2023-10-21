@@ -5,7 +5,6 @@ import torch
 from torch import Tensor
 
 # https://stackoverflow.com/questions/4383571/importing-files-from-different-folder
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
 import losses
 import layers
 

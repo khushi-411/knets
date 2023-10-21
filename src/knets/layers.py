@@ -4,7 +4,6 @@ from typing import Dict
 import torch
 from torch import Tensor
 
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
 import variable
 import activations as act
 import initializers as init

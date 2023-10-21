@@ -3,7 +3,6 @@ from typing import Tuple
 
 import torch
 
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/models')
 import module as nn
 
 class Optimizer:

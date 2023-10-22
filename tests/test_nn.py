@@ -7,32 +7,21 @@ import matplotlib.pyplot as plt
 import torch
 from torch import Tensor
 
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/datasets')
-import mnist
-from dataloader import DataLoader
+import knets as nn
 
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/models')
-import module as nn
-import layers
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
-import initializers as init, activations as act, losses, optimizers, variable
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/eval')
-import metrics
 
 class Net(nn.Module):
     def __init__(
             self
-    ) -> None:
+    ):
         super(Net, self).__init__()
-        weights = init.RandomUniform()
-        bias = init.Constant(0.1)
+        weights = nn.init.RandomUniform()
+        bias = nn.init.Constant(0.1)
         
         """Multi-layer perceptron, here: 2."""
-        self.layer_1 = layers.Dense(28*28, 512, act.tanh, weights, bias)
-        self.layer_2 = layers.Dense(512, 512, act.tanh, weights, bias)
-        self.out = layers.Dense(512, 10, act.sigmoid)
+        self.layer_1 = nn.layers.Dense(28*28, 512, nn.act.tanh, weights, bias)
+        self.layer_2 = nn.layers.Dense(512, 512, nn.act.tanh, weights, bias)
+        self.out = nn.layers.Dense(512, 10, nn.act.sigmoid)
         
         """Single layer perceptron."""
         #self.layer_1 = layers.Dense(28*28, 128, act.tanh, weights, bias)
@@ -40,8 +29,8 @@ class Net(nn.Module):
 
     def forward(
             self,
-            x: Tensor
-    ) -> variable.Variable:
+            x,
+    ):
 
         """Multi-layer perceptron, here: 2."""
         x = self.layer_1(x)
@@ -54,7 +43,7 @@ class Net(nn.Module):
 
         return x
 
-test = pd.read_csv('/home/khushi/Documents/simple-neural-network/datasets/data/mnist_test.csv').astype(np.float32)
+test = pd.read_csv('tests/datasets/data/mnist_test.csv').astype(np.float32)
 test_data = pd.DataFrame(test.iloc[:, 1:])
 test_target = pd.DataFrame(test.iloc[:, 0])
 
@@ -76,8 +65,8 @@ df_specificity = pd.DataFrame(columns=["Step", "Value"])
 df_f1_score = pd.DataFrame(columns=["Step", "Value"])
 
 net = Net()
-optimizer = optimizers.Adam(net.params, learning_rate=0.001)
-loss_func = losses.SigmoidCrossEntropy()
+optimizer = nn.optimizers.Adam(net.params, learning_rate=0.001)
+loss_func = nn.losses.SigmoidCrossEntropy()
 
 """Testing"""
 for step in range(500):
@@ -88,37 +77,37 @@ for step in range(500):
     
     if step%2 == 0:
         loss_dict = {"Step": step, "Value": loss.data.tolist()}
-        df_loss = df_loss.append(loss_dict, ignore_index=True)
+        df_loss = df_loss._append(loss_dict, ignore_index=True)
 
-        acc = metrics.accuracy(o.data > 0.5, test_target)
+        acc = nn.metrics.accuracy(o.data > 0.5, test_target)
         acc_dict = {"Step": step, "Value": acc.tolist()}
-        df_acc = df_acc.append(acc_dict, ignore_index=True)
+        df_acc = df_acc._append(acc_dict, ignore_index=True)
 
         """Use ROC for binary classification."""
-        #roc_val = metrics.roc(o.data, test_target, num_thresholds=100)
+        #roc_val = nn.metrics.roc(o.data, test_target, num_thresholds=100)
         #roc_dict = {"Step": step, "Value": roc_val}
-        #df_roc = df_roc.append(roc_dict, ignore_index=True)
+        #df_roc = df_roc._append(roc_dict, ignore_index=True)
 
         """Use AUC for binary classification."""
-        #auc_val = metrics.auc(o.data, test_target, num_thresholds=100)
+        #auc_val = nn.metrics.auc(o.data, test_target, num_thresholds=100)
         #auc_dict = {"Step": step, "Value": auc_val.tolist()}
-        #df_auc = df_auc.append(auc_dict, ignore_index=True)
+        #df_auc = df_auc._append(auc_dict, ignore_index=True)
 
-        precision_val = metrics.precision(o.data.to(torch.int32), test_target.to(torch.int32))
+        precision_val = nn.metrics.precision(o.data.to(torch.int32), test_target.to(torch.int32))
         pre_dict = {"Step": step, "Value": precision_val.tolist()}
-        df_precision = df_precision.append(pre_dict, ignore_index=True)
+        df_precision = df_precision._append(pre_dict, ignore_index=True)
 
-        recall_val = metrics.recall(o.data.to(torch.int32), test_target.to(torch.int32))
+        recall_val = nn.metrics.recall(o.data.to(torch.int32), test_target.to(torch.int32))
         recall_dict = {"Step": step, "Value": recall_val.tolist()}
-        df_recall = df_recall.append(recall_dict, ignore_index=True)
+        df_recall = df_recall._append(recall_dict, ignore_index=True)
 
-        spe = metrics.recall(o.data.to(torch.int32), test_target.to(torch.int32))
+        spe = nn.metrics.recall(o.data.to(torch.int32), test_target.to(torch.int32))
         spe_dict = {"Step": step, "Value": spe.tolist()}
-        df_specificity = df_specificity.append(spe_dict, ignore_index=True)
+        df_specificity = df_specificity._append(spe_dict, ignore_index=True)
 
-        f1 = metrics.recall(o.data.to(torch.int32), test_target.to(torch.int32))
+        f1 = nn.metrics.recall(o.data.to(torch.int32), test_target.to(torch.int32))
         f1_dict = {"Step": step, "Value": f1.tolist()}
-        df_f1_score = df_f1_score.append(f1_dict, ignore_index=True)
+        df_f1_score = df_f1_score._append(f1_dict, ignore_index=True)
 
         print("Step: %i | loss: %.5f | acc: %.5f | precision: %.5f | recall: %.5f | specificity: %.5f | f1_score: %.5f" % (step, loss.data, acc, precision_val, recall_val, spe, f1))
 

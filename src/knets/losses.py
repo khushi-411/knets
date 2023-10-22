@@ -4,8 +4,8 @@ import torch
 from torch import nn
 from torch import Tensor
 
-import variable
-from activations import softmax
+import knets
+
 
 class _Loss:
     """
@@ -34,7 +34,7 @@ class LossFunction:
 
     def apply(
             self,
-            prediction: variable.Variable,
+            prediction,
             target: Tensor
     ) -> Union[None, _Loss]:
         raise NotImplementedError
@@ -47,8 +47,8 @@ class LossFunction:
 
     def _store_pred_target(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> None:
         p = prediction.data
         p = p if p.dtype is torch.float32 else p.to(torch.float32)
@@ -57,8 +57,8 @@ class LossFunction:
 
     def __call__(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         return self.apply(prediction, target)
 
@@ -70,7 +70,7 @@ class MSE(LossFunction):
 
     def apply(
             self,
-            prediction: variable.Variable,
+            prediction,
             target: Tensor
     ) -> _Loss:
         t = target if target.dtype is torch.float32 else target.to(torch.float32)
@@ -81,7 +81,7 @@ class MSE(LossFunction):
     @property
     def delta(
             self
-    ) -> Tensor:
+    ):
         t = self._target if self._target.dtype is torch.float32 else self._target.to(torch.float32)
         return self._pred - t
 
@@ -94,8 +94,8 @@ class CrossEntropy(LossFunction):
 
     def apply(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         raise NotImplementedError
 
@@ -113,8 +113,8 @@ class SoftMaxCrossEntropy(CrossEntropy):
 
     def apply(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         t = target if target.dtype is torch.float32 else target.to(torch.float32)
         self._store_pred_target(prediction, t)
@@ -138,12 +138,12 @@ class SoftMaxCrossEntropyWithLogits(CrossEntropy):
 
     def apply(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         t = target if target.dtype is torch.float32 else target.to(torch.float32)
         self._store_pred_target(prediction, t)
-        sm = softmax(self._pred)
+        sm = knets.act.softmax(self._pred)
         loss = - torch.mean(torch.sum(t * torch.log(sm), axis=-1))
         return _Loss(loss, self.delta)
 
@@ -151,7 +151,7 @@ class SoftMaxCrossEntropyWithLogits(CrossEntropy):
     def delta(
             self
     ):
-        grad = softmax(self._pred)
+        grad = knets.act.softmax(self._pred)
         onehot_mask = self._target.to(torch.bool)
         grad[onehot_mask] -= 1.
         return grad / len(grad)
@@ -164,8 +164,8 @@ class SparseSoftMaxCrossEntropy(CrossEntropy):
 
     def apply(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         target = target.to(torch.int32) if target.dtype is not torch.int32 else target
         self._store_pred_target(prediction, target)
@@ -190,12 +190,12 @@ class SparseSoftMaxCrossEntropyWithLogits(CrossEntropy):
 
     def apply(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         target = target.to(torch.int32) if target.dtype is not torch.int32 else target
         self._store_pred_target(prediction, target)
-        sm = softmax(self._pred)
+        sm = knets.act.softmax(self._pred)
         log_likelihood = torch.log(sm[torch.arange(sm.shape[0]), target.ravel()] + self._eps)
         loss = -torch.mean(log_likelihood)
         return _Loss(loss, self.delta)
@@ -204,7 +204,7 @@ class SparseSoftMaxCrossEntropyWithLogits(CrossEntropy):
     def delta(
             self
     ):
-        grad = softmax(self._pred)
+        grad = knets.act.softmax(self._pred)
         grad[torch.arange(grad.shape[0]), self._target.ravel()] -= 1.
         return grad / len(grad)
 
@@ -216,8 +216,8 @@ class SigmoidCrossEntropy(CrossEntropy):
 
     def apply(
             self,
-            prediction: variable.Variable,
-            target: Tensor
+            prediction,
+            target,
     ) -> _Loss:
         t = target if target.dtype is torch.float32 else target.to(torch.float32)
         self._store_pred_target(prediction, t)
@@ -230,6 +230,6 @@ class SigmoidCrossEntropy(CrossEntropy):
     @property
     def delta(
             self
-    ) -> Tensor:
+    ):
         t = self._target if self._target.dtype is torch.float32 else self._target.to(torch.float32)
         return self._pred - t

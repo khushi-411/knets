@@ -10,7 +10,7 @@ figure(figsize=(70, 40))
 x = []
 y = []
 
-with open('/home/khushi/Documents/simple-neural-network/datasets/results/iteration-10/loss.csv','r') as csvfile:
+with open('tests/datasets/results/iteration-10/loss.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     k = 0
     for row in lines:
@@ -21,7 +21,7 @@ with open('/home/khushi/Documents/simple-neural-network/datasets/results/iterati
 #print(y)
 
 y1 = []
-with open('/home/khushi/Documents/simple-neural-network/datasets/results/iteration-11/loss.csv','r') as csvfile:
+with open('tests/datasets/results/iteration-11/loss.csv','r') as csvfile:
     lines = csv.reader(csvfile, delimiter=',')
     k = 0
     for row in lines:

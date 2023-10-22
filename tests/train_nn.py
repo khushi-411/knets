@@ -7,19 +7,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch import Tensor
 
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/datasets')
-import mnist
-from dataloader import DataLoader
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/models')
-import module as nn
-import layers
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/ops')
-import initializers as init, activations as act, losses, optimizers, variable
-
-sys.path.insert(1, '/home/khushi/Documents/simple-neural-network/eval')
-import metrics
+import knets as nn
 
 class Net(nn.Module):
     def __init__(
@@ -28,9 +16,9 @@ class Net(nn.Module):
 
         super(Net, self).__init__()
         """Other ways for initialization: init.RandomNormal(), init.TruncatedNormal()"""
-        weights = init.RandomUniform()
+        weights = nn.init.RandomUniform()
         """Other ways bias can be initialize: init.Zeros(), init.Ones()"""
-        bias = init.Constant(0.1)
+        bias = nn.init.Constant(0.1)
         
         """Layers; 
         Parameters are:
@@ -46,9 +34,9 @@ class Net(nn.Module):
         # TODO: create two function to design layers; 1st function is used to create layers and the other is used to apply activation function.
         
         """Multi-layer perceptron, here: 2."""
-        self.layer_1 = layers.Dense(28*28, 512, act.tanh, weights, bias)
-        self.layer_2 = layers.Dense(512, 512, act.tanh, weights, bias)
-        self.out = layers.Dense(512, 10, act.sigmoid)
+        self.layer_1 = nn.layers.Dense(28*28, 512, nn.act.tanh, weights, bias)
+        self.layer_2 = nn.layers.Dense(512, 512, nn.act.tanh, weights, bias)
+        self.out = nn.layers.Dense(512, 10, nn.act.sigmoid)
 
         """Single layer perceptron."""
         #self.layer_1 = layers.Dense(28*28, 128, act.tanh, weights, bias)
@@ -56,8 +44,8 @@ class Net(nn.Module):
 
     def forward(
             self,
-            x: Tensor
-    ) -> variable.Variable:
+            x,
+    ):
  
         """Multi-layer perceptron, here: 2."""
         x = self.layer_1(x)
@@ -71,7 +59,7 @@ class Net(nn.Module):
         return x
 
 """Load dataset"""
-train = pd.read_csv('/home/khushi/Documents/simple-neural-network/datasets/data/mnist_train.csv').astype(np.float32)
+train = pd.read_csv('tests/datasets/data/mnist_train.csv').astype(np.float32)
 train_data = pd.DataFrame(train.iloc[:, 1:])
 train_target = pd.DataFrame(train.iloc[:, 0])
 
@@ -97,10 +85,10 @@ df_f1_score = pd.DataFrame(columns=["Step", "Value"])
 net = Net()
 
 """Other optimizers that can be used: optimizers.SGD(), optimizers.Momentum(), optimizers.AdaGrad(), optimizers.Adadelta(), optimizers.RMSProp(), optimizers.Adam(), optimizers.AdaMax()"""
-optimizer = optimizers.Adam(net.params, learning_rate=0.001)
+optimizer = nn.optimizers.Adam(net.params, learning_rate=0.001)
 
 """Other loss functions that can be used: losses.MSE(), losses.CrossEntropy(), losses.SoftMaxCrossEntropy(), losses.SoftMaxCrossEntropyWithLogits(), losses.SparseSoftMaxCrossEntropy(), losses.SparseSoftMaxCrossEntropyWithLogits()"""
-loss_func = losses.SigmoidCrossEntropy()
+loss_func = nn.losses.SigmoidCrossEntropy()
 
 """Training"""
 for step in range(500):
@@ -113,11 +101,11 @@ for step in range(500):
 
     if step%2 == 0:
         loss_dict = {"Step": step, "Value": loss.data.tolist()}
-        df_loss = df_loss.append(loss_dict, ignore_index=True)
+        df_loss = df_loss._append(loss_dict, ignore_index=True)
 
-        acc = metrics.accuracy(o.data > 0.5, train_target)
+        acc = nn.metrics.accuracy(o.data > 0.5, train_target)
         acc_dict = {"Step": step, "Value": acc.tolist()}
-        df_acc = df_acc.append(acc_dict, ignore_index=True)
+        df_acc = df_acc._append(acc_dict, ignore_index=True)
 
         """Use ROC for binary classification."""
         #roc_val = metrics.roc(o.data, train_target, num_thresholds=100)
@@ -129,21 +117,21 @@ for step in range(500):
         #auc_dict = {"Step": step, "Value": auc_val.tolist()}
         #df_auc = df_auc.append(auc_dict, ignore_index=True)
 
-        precision_val = metrics.precision(o.data.to(torch.int32), train_target.to(torch.int32))
+        precision_val = nn.metrics.precision(o.data.to(torch.int32), train_target.to(torch.int32))
         pre_dict = {"Step": step, "Value": precision_val.tolist()}
-        df_precision = df_precision.append(pre_dict, ignore_index=True)
+        df_precision = df_precision._append(pre_dict, ignore_index=True)
         
-        recall_val = metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
+        recall_val = nn.metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
         recall_dict = {"Step": step, "Value": recall_val.tolist()}
-        df_recall = df_recall.append(recall_dict, ignore_index=True)
+        df_recall = df_recall._append(recall_dict, ignore_index=True)
 
-        spe = metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
+        spe = nn.metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
         spe_dict = {"Step": step, "Value": spe.tolist()}
-        df_specificity = df_specificity.append(spe_dict, ignore_index=True)
+        df_specificity = df_specificity._append(spe_dict, ignore_index=True)
         
-        f1 = metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
+        f1 = nn.metrics.recall(o.data.to(torch.int32), train_target.to(torch.int32))
         f1_dict = {"Step": step, "Value": f1.tolist()}
-        df_f1_score = df_f1_score.append(f1_dict, ignore_index=True)
+        df_f1_score = df_f1_score._append(f1_dict, ignore_index=True)
  
         print("Step: %i | loss: %.5f | acc: %.5f | precision: %.5f | recall: %.5f | specificity: %.5f | f1_score: %.5f" % (step, loss.data, acc, precision_val, recall_val, spe, f1))
 

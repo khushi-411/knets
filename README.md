@@ -11,7 +11,6 @@ pip install knets
 ```
 
 #### Build from source
-
 1. Clone the repository
    ```python
    git clone https://github.com/khushi-411/knets.git
